@@ -2,19 +2,18 @@ import re
 
 def extract_target_line(ocr_results):
     """
-    Optimized extraction logic to handle OCR misidentifications.
-    Treats underscores, dots, and hyphens as the same character.
+    Extracts the complete line containing pattern _1_[cite: 34].
+    Handles degraded text variations: _1_, 1_, or _1.
     """
-    # Pattern: Look for long digits followed by a separator and the number 1.
-    # [._\s-] matches: underscore, dot, space, or hyphen.
-    pattern = r".*\d{10,}[._\s-]1[._\s-].*"
+    # Regex logic: 
+    # Match strings containing '1' with an underscore on either or both sides.
+    # Pattern allows for alphanumeric characters surrounding the match.
+    pattern = r".*(_1_|1_|_1).*"
     
     for item in ocr_results:
         text = item['text'].strip()
         if re.search(pattern, text):
-            # Normalization: Return the text as found, 
-            # or replace separators with underscores for consistency.
-            normalized = text.replace(".", "_").replace("-", "_").replace(" ", "_")
-            return normalized, item['confidence']
+            # Returns the complete text line [cite: 9]
+            return text, item['confidence']
             
     return None, 0.0
